@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Models\RoleHasPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +15,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        $data = Permission::paginate();
+        $data = Permission::get();
         return response($data, 200);
     }
 
@@ -33,7 +33,7 @@ class PermissionController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|string|unique:roles|max:60',
+            'name' => 'required|string|unique:permissions|max:60',
         ];
 
         $messages = [
@@ -53,8 +53,8 @@ class PermissionController extends Controller
                 'guard_name' => 'web',
             ]);
 
-            $roles = Role::find(1);
-            $roles->givePermissionTo($data_inserted);
+            $role = Role::find(1);
+            $role->givePermissionTo($data_inserted->name);
 
             return response($data_inserted, 201);
         }
@@ -83,11 +83,12 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission)
     {
         $rules = [
-            'name' => 'required|string',
+            'name' => 'required|string|max:60',
         ];
 
         $messages = [
             'name.required' => 'The :attribute field is required!',
+            'name.max' => 'The :attribute must be :max characters!'
         ];
 
         $data = Validator::make($request->all(), $rules, $messages);

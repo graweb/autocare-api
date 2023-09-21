@@ -12,46 +12,21 @@ use function PHPUnit\Framework\isEmpty;
 
 class ApiBrasilServiceController extends Controller
 {
-    public function login()
+    public function __construct()
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-        ];
+        $hasToken = ApiBrasilService::first();
 
-        $body = [
-            "email" => env('API_BRASIL_EMAIL'),
-            "password" => env('API_BRASIL_PASSWORD'),
-        ];
+        if (!$hasToken) {
+            $headers = [
+                'Content-Type' => 'application/json',
+            ];
 
-        $hasToken = ApiBrasilService::get();
+            $body = [
+                "email" => env('API_BRASIL_EMAIL'),
+                "password" => env('API_BRASIL_PASSWORD'),
+            ];
 
-        if(count($hasToken) >= 1) {
-            foreach($hasToken as $token) {
-                if(Carbon::now()->format('d/m/Y H:i:s') > Carbon::parse($token->expires_in)->format('d/m/Y H:i:s')) {
-                    return response([
-                        'token' => $token->token,
-                        'expires_in' => Carbon::parse($token->expires_in)->format('d/m/Y H:i:s'),
-                    ], 200);
-                } else {
-
-                    $hasToken->delete();
-
-                    $response = Http::withHeaders($headers)->post(env('API_BRASIL_URL').'/api/v1/login', $body);
-
-                    $data = ApiBrasilService::create([
-                        'token' => $response['authorization']['token'],
-                        'expires_in' => $response['authorization']['expires_in']
-                    ]);
-
-                    return response([
-                        'token' => $data->token,
-                        'expires_in' => Carbon::parse($data->expires_in)->format('d/m/Y H:i:s')
-                    ], 200);
-                }
-            }
-        } else {
-            $hasToken->delete();
-            $response = Http::withHeaders($headers)->post(env('API_BRASIL_URL').'/api/v1/login', $body);
+            $response = Http::withHeaders($headers)->post(env('API_BRASIL_URL') . '/api/v1/login', $body);
             $data = ApiBrasilService::create([
                 'token' => $response['authorization']['token'],
                 'expires_in' => $response['authorization']['expires_in']

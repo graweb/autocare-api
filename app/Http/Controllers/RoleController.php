@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $data = Role::paginate();
+        $data = Role::with('rolehaspermission.permission')->get();
         return response($data, 200);
     }
 

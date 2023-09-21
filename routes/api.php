@@ -34,6 +34,5 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/logout', '\App\Http\Controllers\AuthController@logout');
 
     //API BRASIL SERVICE
-    Route::post('/api_brasil', '\App\Http\Controllers\Service\ApiBrasilServiceController@login');
     Route::post('/api_brasil_vehicles', '\App\Http\Controllers\Service\ApiBrasilServiceController@vehicles');
 });

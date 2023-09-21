@@ -14,7 +14,7 @@ class VehicleController extends Controller
      */
     public function index()
     {
-        $data = Vehicle::paginate();
+        $data = Vehicle::get();
         return response($data, 200);
     }
 

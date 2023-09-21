@@ -34,7 +34,7 @@ class AuthController extends Controller
             return $data->errors();
         } else {
 
-            $user = User::with(['customer'])->where('email', $data->validated()['email'])->first();
+            $user = User::where('email', $data->validated()['email'])->first();
 
             if(!$user || !Hash::check($data->validated()['password'], $user->password)) {
                 return response(['message' => 'The provided credentials are incorrect.']);
